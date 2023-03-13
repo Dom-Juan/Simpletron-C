@@ -6,20 +6,29 @@
 
 #define is ==
 
+void pause() {
+    fprintf(stderr,"Press any key to continue . . .");
+    while (1) if (_kbhit()) break;
+    fflush(stdin);
+    fflush(stdout);
+}
+
 void print_intro() {
     if(setlocale(LC_ALL, "") == NULL) {
         fprintf(stderr, "error while setlocale()\n");
     }
-    fprintf(stderr, ANSI_COLOR_CYAN "\t***    Bem vindo ao Simpletron!           ***\n");
-    fprintf(stderr, "\t***    Por favor digite o programa uma instrução ou pa-   ***\n");
-    fprintf(stderr, "\t***    lavra de dados por vez. Eu vou mosrar a posição    ***\n");
-    fprintf(stderr, "\t***    e uma marcação de interrogação(?) como indicação.  ***\n");
-    fprintf(stderr, "\t***    Você então digite a palavra para aquela posição.   ***\n");
-    fprintf(stderr, "\t***    Digite -9999 para parar o programa.               ***\n"ANSI_COLOR_RESET);
+    fprintf(stderr, ANSI_COLOR_CYAN "\n\t***                 Bem vindo ao Simpletron!                ***\n");
+    fprintf(stderr, "\t***    Por favor digite o programa uma instrução ou pa-     ***\n");
+    fprintf(stderr, "\t***    lavra de dados por vez. Eu vou mosrar a posição      ***\n");
+    fprintf(stderr, "\t***    e uma marcação de interrogação(?) como indicação.    ***\n");
+    fprintf(stderr, "\t***    Voc? então digite a palavra para aquela posição.     ***\n");
+    fprintf(stderr, "\t***    Digite -9999 para parar o programa.                  ***\n"ANSI_COLOR_RESET);
+    fflush(stdin);
+    fflush(stdout);
 }
 
 bool check_arguments(const int num_arguments) {
-    return num_arguments < 3 ? false : true;
+    return num_arguments < 2 ? false : true;
 }
 
 bool valid_input(int word) {
@@ -27,28 +36,32 @@ bool valid_input(int word) {
     else return false;
 }
 
-int start_machine(int argc, char *argv[], bool dump_status) {
+int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
+    fprintf(stderr, "\n             [start_machine]\n");
+    fflush(stdin);
     if(setlocale(LC_ALL, "") == NULL) {
         fprintf(stderr, "error while setlocale()\n");
     }
     enum exit_val e_val;
     simpletron v1;
-    bool core_dump = dump_status, trace = true;
     if (check_arguments(argc)) {
         char file_name[20];
+        strcpy_s(file_name, sizeof(file_name), argv[1]);
         memory_init(&v1);
         print_intro();
-        load(&v1, *argv, file_name);
-        e_val = execute_code(&v1, trace);
+        load(&v1, file_name);
+        e_val = execute_code(&v1, trace_status);
         print_warning(v1, e_val);
-        if(core_dump) dump(v1);
+        if(dump_status) dump(v1);
         return e_val;
     } else {
+        fflush(stdout);
+        fflush(stdin);
         memory_init(&v1);
         print_intro();
         input(&v1);
         size_t i = 0;
-        while(v1.memory[i] not_eq -9999 and i <= v1.mem_size) {
+        while(v1.memory[i] not_eq -9999 and v1.memory[i] not_eq 0) {
             fprintf(
                     stderr,
                     ANSI_COLOR_CYAN "Memory" "[%zu]" ": " ANSI_COLOR_YELLOW "%hd\n" ANSI_COLOR_RESET,
@@ -56,19 +69,20 @@ int start_machine(int argc, char *argv[], bool dump_status) {
                     );
             i++;
         }
-        e_val = execute_code_input(&v1, trace);
+        e_val = execute_code_input(&v1, trace_status);
         print_warning(v1, e_val);
-        if(core_dump) dump(v1);
+        if(dump_status) dump(v1);
         return e_val;
     }
 }
 
 static void memory_init(simpletron *v1) {
+    fflush(stdin);
     static mem_type mem[MEM_SIZE];
     v1->mem_size = MEM_SIZE;
     v1->memory = mem;
     fprintf(stderr, ANSI_COLOR_GREEN "[Memory allocated]" ANSI_COLOR_RESET "\n");
-    system("pause");
+    pause();
 }
 
 static void input(simpletron *v1) {
@@ -76,6 +90,7 @@ static void input(simpletron *v1) {
     size_t i = 0;
     fprintf(stderr, "00 ?");
     scanf_s("%hd", &instruction);
+    fseek(stdin, 0, SEEK_END);
     while(i < v1->mem_size) {
         if(instruction is -9999) break;
         if (valid_input(instruction)) {
@@ -86,32 +101,38 @@ static void input(simpletron *v1) {
         }
         fprintf(stderr, "%4d ?", instruction);
         scanf_s("%hd", &instruction);
+        fseek(stdin, 0, SEEK_END);
         i++;
     }
 }
 
-static void load(simpletron *v1, char *f, char file_name[]) {
-    char buffer[50];
+static void load(simpletron *v1, char file_name[]) {
     mem_type instruction = 0;
-    FILE *file_path;
+    FILE *file_point;
     size_t i;
     int errnum;
-    if(fopen_s(&file_path, file_name, "r")) {
+    errno_t err;
+    fprintf(stderr, ANSI_COLOR_GREEN "[file name]: %s\n" ANSI_COLOR_RESET, file_name);
+    if((err = fopen_s(&file_point, file_name, "r")) not_eq 0) {
         errnum = errno;
-        fprintf(stderr, "ERROR: %d\n", strerror_s(buffer, sizeof(buffer), errnum));
-        system("pause");
+        char buf[255];
+        strerror_s(buf, sizeof buf, err);
+        fprintf(stderr, "ERROR: %d Cannot open file %s %s\n",
+                errnum, file_name, buf);
+        pause();
         exit(EXIT_FAILURE);
     } else {
-        for(i = 0; !feof(file_path) and i < v1->mem_size; i++) {
+        for(i = 0; !feof(file_point) and i < v1->mem_size; i++) {
             if(instruction is -9999) break;
-            if(get_instruction_from_file(file_path, &instruction) == 0) {
+            if(get_instruction_from_file(file_point, &instruction) == 0) {
                 fprintf(stderr, "ERROR: Improper program\n");
-                system("pause");
+                pause();
                 exit(ERROR_INPUT);
             }
+            fprintf(stderr, ANSI_COLOR_YELLOW "Instruction: %+05d\n" ANSI_COLOR_RESET, instruction);
             v1->memory[i] = instruction;
         }
-        fclose(file_path);
+        fclose(file_point);
     }
 }
 
@@ -141,9 +162,9 @@ static void print_warning(simpletron v1, enum exit_val e_val) {
     if(e_val == ERROR_NONE)
         return;
     if(e_val == ERROR_INVALID)
-        sprintf(buffer, "WARNING:%+05d: %s", v1.instruction_register,warning[e_val]);
+        sprintf(buffer, "WARNING:%+05d: %s\n", v1.instruction_register,warning[e_val]);
     else
-        sprintf(buffer, "WARNING: %s", warning[e_val]);
+        sprintf(buffer, "WARNING: %s\n", warning[e_val]);
 }
 
 static enum exit_val execute_code(simpletron *v1, bool trace) {
@@ -154,7 +175,6 @@ static enum exit_val execute_code(simpletron *v1, bool trace) {
         v1->instruction_register = v1->memory[v1->program_counter];
         v1->op_code = v1->instruction_register / 100;
         v1->operand = v1->instruction_register % 100;
-        ++v1->program_counter;
         if(trace)
             fprintf(
                     stderr,
@@ -200,14 +220,14 @@ static enum exit_val execute_code(simpletron *v1, bool trace) {
                 branch_negative_instruction_from_file(v1);
                 break;
             case HALT:
-                halt_instruction_from_file();
-                break;
+                return halt_instruction_from_file(v1);
             default:
                 return ERROR_INVALID;
         }
         if (v1->accumulator < MEM_MIN or v1->accumulator > MEM_MAX)
             return ERROR_INT_OVERFLOW;
     }
+    fprintf(stderr, "%d\n", ERROR_MEMORY);
     return ERROR_MEMORY;
 }
 
@@ -265,13 +285,14 @@ static enum exit_val execute_code_input(simpletron *v1, bool trace) {
                 branch_negative_instruction(v1);
                 break;
             case HALT:
-                halt_instruction(v1);
+                return halt_instruction(v1);
             default:
                 return ERROR_INVALID;
         }
         if (v1->accumulator < MEM_MIN or v1->accumulator > MEM_MAX)
             return ERROR_INT_OVERFLOW;
     }
+    fprintf(stderr, "%d\n", ERROR_MEMORY);
     return ERROR_MEMORY;
 }
 
@@ -279,9 +300,9 @@ static void dump(simpletron v1) {
     fprintf(stderr, ANSI_COLOR_MAGENTA "\nREGISTERS:");
     fprintf(stderr, "\nACCUMULATOR:                 %+05d", v1.accumulator);
     fprintf(stderr, "\nINSTRUCTION REGISTER:        %+05d", v1.instruction_register);
-    fprintf(stderr, "\nPROGRAM COUNTER:         %5zu",  v1.program_counter);
+    fprintf(stderr, "\nPROGRAM COUNTER:             %5zu",  v1.program_counter);
     fprintf(stderr, "\nOPERAND CODE:                %02d",  v1.op_code);
-    fprintf(stderr, "\nOPERAND:                     %02d" ANSI_COLOR_RESET,  v1.operand);
+    fprintf(stderr, "\nOPERAND:                     %02d\n" ANSI_COLOR_RESET,  v1.operand);
     for(size_t i = 0; i < v1.mem_size / 10; i++) {
         fprintf(stderr, ANSI_COLOR_GREEN "%2zu   ", i * 10);
         for(size_t j = 0; j < v1.mem_size / 10; j++) {
@@ -293,5 +314,4 @@ static void dump(simpletron v1) {
                     );
         }
     }
-    system("pause");
 }

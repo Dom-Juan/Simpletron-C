@@ -5,6 +5,7 @@
 #ifndef SIMPLETRON_SIMPLETRON_MACHINE_H
 #define SIMPLETRON_SIMPLETRON_MACHINE_H
 // Standart Data Stypes.
+#include <windows.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -15,7 +16,9 @@
 #include <string.h>
 #include <limits.h>
 #include <iso646.h>
-//#include <unistd.h>
+#include <conio.h>
+//#include <dirent.h> // Apenas POSIX, MSVC não possuir essa lib
+//#include <unistd.h> // Apenas POSIX, MSVC não possuir essa lib
 #include "unistd.h"
 // Includes de headers do programa.
 #include "simpletron_memory.h"
@@ -30,13 +33,13 @@
 
 // Struct do Simpletron
 typedef struct Simpletron {
-    mem_type *memory;           // array unidimensional simulando a memória "RAM".
-    size_t mem_size;            // tamanho da memória.
+    mem_type *memory;           // array unidimensional simulando a mem?ria "RAM".
+    size_t mem_size;            // tamanho da mem?ria.
     size_t program_counter;     // contador de programa.
     int accumulator;            // valor sendo processado.
-    int instruction_register;   // instrução atual.
-    int op_code;                // operação atual a ser feita
-    int operand;                // operador ou local da memória da instrução do operando.
+    int instruction_register;   // instru??o atual.
+    int op_code;                // opera??o atual a ser feita
+    int operand;                // operador ou local da mem?ria da instru??o do operando.
 } simpletron;
 
 // Enum para os valores de saida.
@@ -51,7 +54,7 @@ enum exit_val {
     ERROR_MEMORY
 };
 
-// matriz de strings com N strings para printar o erro evitar redundancia no código.
+// matriz de strings com N strings para printar o erro evitar redundancia no c?digo.
 static const char *warning[] = {
     "Input invalido",
     "Divisao por zero",
@@ -59,22 +62,32 @@ static const char *warning[] = {
     "Overflow de inteiro signed",
     "Overflow de inteiro",
     "Instrucao invalida",
-    "Execucao chegou no fim da memoria sem terminar"
+    "Execucao chegou no fim da memoria sem HALT"
 };
 
-// Declarações de funções do código.
+static const char *end_execution[] = {
+        "Terminado execução com sucesso!",
+        "Divisao por zero",
+        "Resto zero",
+        "Overflow de inteiro signed",
+        "Overflow de inteiro",
+        "Instrucao invalida",
+        "Execucao chegou no fim da memoria sem HALT"
+};
+
+// Declara??es de fun??es do c?digo.
 static enum exit_val execute_code(simpletron *, bool trace);
 static enum exit_val execute_code_input(simpletron *v1, bool trace);
 static void memory_init(simpletron *);
 static void input(simpletron *);
-static void load(simpletron *, char *,  char file_name[]);
+static void load(simpletron *v1, char file_name[]);
 static void dump(simpletron v1);
 static void print_warning(simpletron v1, enum exit_val e_val);
 int get_instruction_from_file(FILE *, mem_type *);
-int start_machine(int argc, char *argv[], bool dump_status);
+int start_machine(int argc, char *argv[], bool dump_status, bool trace_status);
 bool valid_input(int word);
 
-// Funções que o simpletron faz.
+// Fun??es que o simpletron faz.
 void read_instruction(simpletron *);
 void write_instruction(simpletron *);
 void load_instruction(simpletron *);
@@ -101,5 +114,6 @@ enum exit_val remainder_instruction_from_file(simpletron *);
 void branch_instruction_from_file(simpletron *);
 void branch_negative_instruction_from_file(simpletron *);
 void branch_zero_instruction_from_file(simpletron *);
-enum exit_val halt_instruction_from_file();
+enum exit_val halt_instruction_from_file(simpletron *);
+
 #endif //SIMPLETRON_SIMPLETRON_MACHINE_H

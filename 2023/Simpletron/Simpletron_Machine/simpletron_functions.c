@@ -74,13 +74,22 @@ enum exit_val halt_instruction(simpletron *v1) {
     v1->program_counter = 100;
     return ERROR_NONE;
 }
-
-/* Execução de arquivo */
+/**********************************************/
+/** Execução do programa por arquigo arquivo **/
+/**********************************************/
 bool read_instruction_from_file(simpletron *v1) {
+    fprintf(stderr, "Digite a entrada [-9999 - 9999]\n>: ");
+    /*
     if(get_instruction_from_file(stdin, &(v1->memory[v1->operand])) == 0)
         return false;
-    else
-        v1->program_counter++;
+    v1->program_counter++;
+    return true;
+    */
+    mem_type temp;
+    scanf_s("%hd", &temp);
+    fseek(stdin, 0, SEEK_END);
+    v1->memory[v1->operand] = temp;
+    v1->program_counter++;
     return true;
 }
 
@@ -153,6 +162,30 @@ void branch_zero_instruction_from_file(simpletron *v1) {
         v1->program_counter++;
 }
 
-enum exit_val halt_instruction_from_file() {
+enum exit_val halt_instruction_from_file(simpletron *v1) {
+    fprintf(stderr, "*** Execução do Simpletron foi terminada ***");
+    v1->program_counter = 100;
     return ERROR_NONE;
+}
+
+bool list_dir_contents(const char *string_dir) {
+    WIN32_FIND_DATA find_file;
+    HANDLE handle_file = NULL;
+    char string_path[2048];
+
+    // Especificando o tipo de arquivo a ser utilizado.
+    sprintf(string_path, "%s\\*.*", string_dir);
+    if((handle_file = FindFirstFile(string_path, &find_file)) == INVALID_HANDLE_VALUE) {
+        fprintf(
+                stderr,
+                ANSI_COLOR_RED "Path not found: " ANSI_COLOR_YELLOW  "[%s]\n" ANSI_COLOR_RESET,
+                string_dir
+                );
+        return false;
+    }
+    do {
+
+    } while(FindNextFile(handle_file, &find_file));
+    FindClose(handle_file);
+    return true;
 }

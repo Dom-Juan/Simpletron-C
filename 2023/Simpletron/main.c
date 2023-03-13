@@ -15,10 +15,21 @@ int main(int argc, char *argv[]) {
     }
     setlocale(LC_ALL, "");
     char aux_dump_status;
-    bool dump_status;
-    fprintf(stderr,ANSI_COLOR_BLUE "Deseja ver o dump da memória ? " ANSI_COLOR_GREEN " [S] " ANSI_COLOR_RED " [N]\n" ANSI_COLOR_RESET);
+    char aux_trace_status;
+
+    fprintf(stderr,ANSI_COLOR_BLUE "Deseja ver o dump da Memória ? " ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "S" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " [" ANSI_COLOR_RED "N" ANSI_COLOR_RESET "]\n" ANSI_COLOR_RESET);
     scanf_s("%c", &aux_dump_status, 1);
-    dump_status = aux_dump_status == 'S' ? true : false;
-    fprintf(stderr, "%d", start_machine(argc, argv, dump_status));
+    fseek(stdin, 0, SEEK_END);
+
+    fprintf(stderr,ANSI_COLOR_BLUE "Deseja ver o trace da Execução ? " ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "S" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " [" ANSI_COLOR_RED "N" ANSI_COLOR_RESET "]\n" ANSI_COLOR_RESET);
+    scanf_s("%c", &aux_trace_status, 1);
+    fseek(stdin, 0, SEEK_END);
+
+    bool dump_status = aux_dump_status == 'S' ? true : false;
+    bool trace = aux_trace_status == 'S' ? true : false;
+    int execution_result = start_machine(argc, argv, dump_status, trace);
+    fprintf(stderr, "\nEXIT: %d - %s\n", execution_result, end_execution[execution_result]);
+    fprintf(stderr,"Press any key to continue . . .");
+    while (1) if (_kbhit()) break;
     return 0;
 }
