@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\Simpletron_Machine\simpletron_machine.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\Simpletron_Machine\simpletron_functions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\Simpletron_Machine\headers\simpletron_memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\Simpletron_Machine\headers\simpletron_machine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\Simpletron_Machine\headers\unistd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\Simpletron_Machine\headers\simpletron_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\projects\Linguagem-Programacao\2023\Simpletron-C\2023\Simpletron\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{73E57C6C-1605-3630-89AB-E4096FB98B6A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{82B23F44-781E-349F-A114-B7D1DCA355E7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

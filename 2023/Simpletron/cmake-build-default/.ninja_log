@@ -1,8 +1,6 @@
 # ninja log v5
 1	748	7004421212001568	CMakeFiles/Simpletron.dir/main.c.obj	318c9fb01def4ddc
-682	952	7004422610150381	Simpletron.exe	73d7231547386932
-1	676	7004422607890643	CMakeFiles/Simpletron.dir/Simpletron_Machine/simpletron_machine.c.obj	eaa4f409b1f38b4
-19	730	7004420283719478	CMakeFiles/Simpletron.dir/Simpletron_Machine/simpletron_functions.c.obj	c21d339881c7af66
-0	698	7004426816887023	build.ninja	661e4488bfa5303c
-1	676	7004426823872965	CMakeFiles/Simpletron.dir/Simpletron_Machine/simpletron_machine.c.obj	eaa4f409b1f38b4
 678	909	7004426825751203	Simpletron.exe	73d7231547386932
+0	698	7005288949580555	build.ninja	661e4488bfa5303c
+1	676	7004426823872965	CMakeFiles/Simpletron.dir/Simpletron_Machine/simpletron_machine.c.obj	eaa4f409b1f38b4
+19	730	7004420283719478	CMakeFiles/Simpletron.dir/Simpletron_Machine/simpletron_functions.c.obj	c21d339881c7af66

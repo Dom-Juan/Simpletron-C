@@ -21,8 +21,25 @@ void print_intro() {
     fprintf(stderr, "\t***    Por favor digite o programa uma instrução ou pa-     ***\n");
     fprintf(stderr, "\t***    lavra de dados por vez. Eu vou mosrar a posição      ***\n");
     fprintf(stderr, "\t***    e uma marcação de interrogação(?) como indicação.    ***\n");
-    fprintf(stderr, "\t***    Voc? então digite a palavra para aquela posição.     ***\n");
+    fprintf(stderr, "\t***    Você então digite a palavra para aquela posição.     ***\n");
     fprintf(stderr, "\t***    Digite -9999 para parar o programa.                  ***\n"ANSI_COLOR_RESET);
+    fflush(stdin);
+    fflush(stdout);
+}
+
+void print_menu(bool machine_status) {
+    if(setlocale(LC_ALL, "") == NULL) {
+        fprintf(stderr, "error while setlocale()\n");
+    }
+    if(machine_status is true)
+        fprintf(stderr, ANSI_COLOR_RED "\n\t***                 * Simpletron com memória cheia *                ***\n"ANSI_COLOR_RESET);
+    else 
+        fprintf(stderr, ANSI_COLOR_GREEN "\n\t***                 * Simpletron com memória livre *                ***\n"ANSI_COLOR_RESET);
+    fprintf(stderr, ANSI_COLOR_CYAN "\n\t***                 Bem vindo ao Simpletron!                ***\n"ANSI_COLOR_RESET);
+    fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "1" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Inserir outro programa\n" ANSI_COLOR_RESET);
+    fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "2" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Salvar Arquivo\n" ANSI_COLOR_RESET);
+    fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "3" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Carregar Arquivo\n" ANSI_COLOR_RESET);
+    fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_RED "0" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Sair do programa\n" ANSI_COLOR_RESET);
     fflush(stdin);
     fflush(stdout);
 }
@@ -44,6 +61,8 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
     }
     enum exit_val e_val;
     simpletron v1;
+    v1.status = false;
+    int option = 0;
     if (check_arguments(argc)) {
         char file_name[20];
         strcpy_s(file_name, sizeof(file_name), argv[1]);
@@ -55,23 +74,36 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
         if(dump_status) dump(v1);
         return e_val;
     } else {
-        fflush(stdout);
-        fflush(stdin);
-        memory_init(&v1);
         print_intro();
-        input(&v1);
-        size_t i = 0;
-        while(v1.memory[i] not_eq -9999 and v1.memory[i] not_eq 0) {
-            fprintf(
-                    stderr,
-                    ANSI_COLOR_CYAN "Memory" "[%zu]" ": " ANSI_COLOR_YELLOW "%hd\n" ANSI_COLOR_RESET,
-                    i, v1.memory[i]
-                    );
-            i++;
+        while(true) {
+            fflush(stdout);
+            fflush(stdin);
+            if(v1.status is true) 
+                memory_reset(&v1);
+            else {
+                memory_init(&v1);
+                fprintf(stderr, "\n");
+                print_menu(v1.status);
+                scanf_s("%d", &option);
+                if(option is 1) {
+                    input(&v1);
+                    size_t i = 0;
+                    while(v1.memory[i] not_eq -9999 and v1.memory[i] not_eq 0) {
+                        fprintf(
+                                stderr,
+                                ANSI_COLOR_CYAN "Memory" "[%zu]" ": " ANSI_COLOR_YELLOW "%hd\n" ANSI_COLOR_RESET,
+                                i, v1.memory[i]
+                                );
+                        i++;
+                    }
+                    e_val = execute_code_input(&v1, trace_status);
+                    print_warning(v1, e_val);
+                    if(dump_status) dump(v1);
+                    v1.status = true;
+                    break;
+                }
+            }
         }
-        e_val = execute_code_input(&v1, trace_status);
-        print_warning(v1, e_val);
-        if(dump_status) dump(v1);
         return e_val;
     }
 }
@@ -81,7 +113,22 @@ static void memory_init(simpletron *v1) {
     static mem_type mem[MEM_SIZE];
     v1->mem_size = MEM_SIZE;
     v1->memory = mem;
+    v1->status = false;
     fprintf(stderr, ANSI_COLOR_GREEN "[Memory allocated]" ANSI_COLOR_RESET "\n");
+    pause();
+}
+
+static void memory_reset(simpletron *v1) {
+    fflush(stdin);
+    static mem_type mem[MEM_SIZE];
+    v1->mem_size = MEM_SIZE;
+    v1->memory = mem;
+    v1->op_code = 0;
+    v1->operand = 0;
+    v1->instruction_register = 0;
+    v1->accumulator = 0;
+    v1->status = false;
+    fprintf(stderr, ANSI_COLOR_GREEN "[Memory re-allocated]" ANSI_COLOR_RESET "\n");
     pause();
 }
 

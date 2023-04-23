@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/Simpletron_Machine/headers/helpers.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/Simpletron_Machine/headers/simpletron_functions.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/Simpletron_Machine/headers/simpletron_machine.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/Simpletron_Machine/headers/simpletron_memory.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/Simpletron_Machine/headers/unistd.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/Simpletron_Machine/simpletron_functions.c" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/Simpletron_Machine/simpletron_machine.c" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/main.c" charset="ISO-8859-1" />
+  </component>
+</project>

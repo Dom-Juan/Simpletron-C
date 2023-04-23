@@ -1,4 +1,4 @@
-# Install script for directory: E:/dev/projects/Linguagem-Programacao/2023/Simpletron
+# Install script for directory: D:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "E:/dev/projects/Linguagem-Programacao/2023/Simpletron/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

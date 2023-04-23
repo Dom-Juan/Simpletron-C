@@ -33,13 +33,14 @@
 
 // Struct do Simpletron
 typedef struct Simpletron {
-    mem_type *memory;           // array unidimensional simulando a mem?ria "RAM".
-    size_t mem_size;            // tamanho da mem?ria.
+    mem_type *memory;           // array unidimensional simulando a memória "RAM".
+    size_t mem_size;            // tamanho da memória.
     size_t program_counter;     // contador de programa.
     int accumulator;            // valor sendo processado.
-    int instruction_register;   // instru??o atual.
-    int op_code;                // opera??o atual a ser feita
-    int operand;                // operador ou local da mem?ria da instru??o do operando.
+    int instruction_register;   // instrução atual.
+    int op_code;                // operaçãoo atual a ser feita
+    int operand;                // operador ou local da memória da instrução do operando.
+    bool status;                // status para determinar se a struct possui valores.
 } simpletron;
 
 // Enum para os valores de saida.
@@ -79,6 +80,7 @@ static const char *end_execution[] = {
 static enum exit_val execute_code(simpletron *, bool trace);
 static enum exit_val execute_code_input(simpletron *v1, bool trace);
 static void memory_init(simpletron *);
+static void memory_reset(simpletron *);
 static void input(simpletron *);
 static void load(simpletron *v1, char file_name[]);
 static void dump(simpletron v1);
