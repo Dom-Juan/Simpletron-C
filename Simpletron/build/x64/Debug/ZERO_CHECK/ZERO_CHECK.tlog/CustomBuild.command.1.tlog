@@ -1,0 +1,10 @@
+^D:\DEV\PROJECTS\LINGUAGEM-PROGRAMACAO\2023\SIMPLETRON-C\2023\SIMPLETRON\BUILD\CMAKEFILES\4F0D4005E9A5257A0D11FACE86A4AB48\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron -BD:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron/build/Simpletron.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

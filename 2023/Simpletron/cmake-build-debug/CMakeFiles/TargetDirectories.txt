@@ -1,3 +1,0 @@
-D:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron/cmake-build-debug/CMakeFiles/Simpletron.dir
-D:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/dev/projects/Linguagem-Programacao/2023/Simpletron-C/2023/Simpletron/cmake-build-debug/CMakeFiles/rebuild_cache.dir
