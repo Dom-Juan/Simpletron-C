@@ -1,6 +1,0 @@
-{
-  "C_Cpp_Runner.cStandard": "c17",
-  "C_Cpp_Runner.cppStandard": "c++23",
-  "C_Cpp_Runner.useMsvc": true,
-  "C_Cpp.default.compilerPath": "\"D:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.35.32215\\bin\\Hostx64\\x64\""
-}

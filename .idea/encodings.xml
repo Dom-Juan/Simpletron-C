@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/Simpletron/Simpletron_Machine/headers/simpletron_functions.h" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/Simpletron/Simpletron_Machine/headers/simpletron_machine.h" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/Simpletron/Simpletron_Machine/headers/simpletron_memory.h" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/Simpletron/Simpletron_Machine/headers/unistd.h" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/Simpletron/Simpletron_Machine/simpletron_functions.c" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/Simpletron/Simpletron_Machine/simpletron_machine.c" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/Simpletron/main.c" charset="windows-1252" />
+    <file url="PROJECT" charset="windows-1252" />
   </component>
 </project>

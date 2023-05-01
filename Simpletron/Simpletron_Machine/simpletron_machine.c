@@ -106,7 +106,7 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
                 fflush(stdout);
                 if(option is 1) {
                     input(&v1);
-                    size_t i = 0;
+                    i = 0;
                     while(v1.memory[i] not_eq -9999 and v1.memory[i] not_eq 0) {
                         fprintf(
                                 stderr,

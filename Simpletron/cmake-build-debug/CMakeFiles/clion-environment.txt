@@ -1,4 +1,0 @@
-ToolSet: 17.0 (local)@D:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools
-Options: msvc.arch=amd64_x86
-
-Options:

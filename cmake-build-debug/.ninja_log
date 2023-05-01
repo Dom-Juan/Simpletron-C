@@ -1,0 +1,7 @@
+# ninja log v5
+17	1200	7046153814490868	CMakeFiles/Simpletron_C.dir/Simpletron/Simpletron_Machine/simpletron_machine.c.obj	da02637205e10165
+5	1208	7046153814511605	CMakeFiles/Simpletron_C.dir/Simpletron/main.c.obj	cb768d811e9c8a0b
+0	1223	7046153814739376	CMakeFiles/Simpletron_C.dir/Simpletron/Simpletron_Machine/simpletron_functions.c.obj	d394c4ec141623d8
+1230	1646	7046153818768275	Simpletron_C.exe	8b08872eaa3d970f
+0	663	7046159002840012	CMakeFiles/Simpletron_C.dir/Simpletron/Simpletron_Machine/simpletron_machine.c.obj	da02637205e10165
+667	863	7046159004521722	Simpletron_C.exe	8b08872eaa3d970f
