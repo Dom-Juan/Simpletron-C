@@ -90,7 +90,7 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
         print_warning(v1, e_val);
         if(dump_status) dump(v1);
         v1.status = true;
-        while(option not_eq 0) {
+        while(option not_eq 0) {    // se for 0, sai do loop e do programa, ultimo e_val é retornado por padrão.
             fflush(stdout);
             fflush(stdin);
             if(v1.status is true) 
@@ -104,7 +104,7 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
                 scanf_s("%d", &option);
                 fflush(stdin);
                 fflush(stdout);
-                if(option is 1) {
+                if(option is 1) {   // Carregar instruções de um programa e realizar operação.
                     input(&v1);
                     i = 0;
                     while(v1.memory[i] not_eq -9999 and v1.memory[i] not_eq 0) {
@@ -119,6 +119,12 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
                     print_warning(v1, e_val);
                     if(dump_status) dump(v1);
                     v1.status = true;
+                }
+                if(option is 2) {   // Salvar o programa em um arquivo.
+
+                }
+                if(option is 3) {   // Carregar o programa de um arquivo.
+
                 }
             }
         }
@@ -377,4 +383,81 @@ static void dump(simpletron v1) {
                     );
         }
     }
+}
+
+char *int_to_array(int number) {
+    int n = log10(number) + 1;
+    char *result = calloc(n, sizeof(char));
+    for(int i = n - 1; i>= 0; --i, number /10) {
+        result[i] = (number % 10) + '0';
+    }
+    return result;
+}
+
+bool save_program(simpletron *v1) {
+    FILE *out;
+    char *c;
+    char filename[50];
+    char full_file_path[100];
+    fprintf(stderr, "Digite o nome do arquivo: \n > ");
+    scanf_s("%s", filename);
+    strcpy_s(full_file_path, sizeof(filename), "./saved_files/");
+    strcpy_s(full_file_path, sizeof(filename), filename);
+    fopen_s(&out, full_file_path, "w+, ccs=UNICODE");
+    if(out == NULL) {
+        return false;
+    } else {
+        size_t index = 0;
+        while(index < v1->mem_size) {
+            c = int_to_array(v1->memory[(int)index]);
+            fprintf(&out, "%s", c);
+            free(c);
+            index++;
+        }
+    }
+    fclose(out);
+    return true;
+}
+
+bool load_program(simpletron *v1) {
+    FILE *in;
+    int j = 0;
+    char cursor;
+    char filename[50];
+    char full_file_path[100];
+    fprintf(stderr, "Digite o nome do arquivo: \n > ");
+    scanf_s("%s", filename);
+    strcpy_s(full_file_path, sizeof(filename), "./saved_files/");
+    strcpy_s(full_file_path, sizeof(filename), filename);
+    fopen_s(&in, full_file_path, "w+, ccs=UNICODE");
+    if(in == NULL) {
+        return false;
+    } else {
+        char ignore[1024];
+        size_t index = 0;
+        int instruction_size = 0;
+        mem_type instruction[MEM_SIZE];
+        char string_instruction[4];
+        while((cursor = fgetc(in)) not_eq EOF) {
+            if(cursor == '#') {
+                fgets(ignore, sizeof(ignore), in);
+                continue;
+            } else if(cursor is ' ') {
+                continue;
+            } else if(cursor is '    ') {
+                continue;
+            } else {
+                if(j < 4) {
+                    j = 0;
+                    instruction[(int)index] = (mem_type) atoi(string_instruction);
+                    index++;
+                } else {
+                    strncat_s(string_instruction, sizeof(char), cursor, 1);
+                }
+                j++;
+            }
+        }
+    }
+    fclose(in);
+    return true;
 }

@@ -22,7 +22,8 @@
   <component name="ChangeListManager">
     <list default="true" id="745d1cb8-a812-4dd8-b847-6c507ec16bce" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Simpletron/Simpletron_Machine/headers/simpletron_machine.h" beforeDir="false" afterPath="$PROJECT_DIR$/Simpletron/Simpletron_Machine/headers/simpletron_machine.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Simpletron/Simpletron_Machine/simpletron_machine.c" beforeDir="false" afterPath="$PROJECT_DIR$/Simpletron/Simpletron_Machine/simpletron_machine.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +86,7 @@
       <updated>1682912039938</updated>
       <workItem from="1682912058654" duration="643000" />
       <workItem from="1683654654141" duration="697000" />
-      <workItem from="1684449862104" duration="337000" />
+      <workItem from="1684449862104" duration="3988000" />
     </task>
     <servers />
   </component>

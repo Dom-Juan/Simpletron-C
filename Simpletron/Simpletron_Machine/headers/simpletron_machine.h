@@ -76,7 +76,7 @@ static const char *end_execution[] = {
         "Execucao chegou no fim da memoria sem HALT"
 };
 
-// Declara??es de fun??es do c?digo.
+// Declarações de funções do código.
 static enum exit_val execute_code(simpletron *, bool trace);
 static enum exit_val execute_code_input(simpletron *v1, bool trace);
 static void memory_init(simpletron *);
@@ -88,8 +88,10 @@ static void print_warning(simpletron v1, enum exit_val e_val);
 int get_instruction_from_file(FILE *, mem_type *);
 int start_machine(int argc, char *argv[], bool dump_status, bool trace_status);
 bool valid_input(int word);
+bool save_program(simpletron *v1);
+bool load_program(simpletron *v1);
 
-// Fun??es que o simpletron faz.
+// Funções que o simpletron faz.
 void read_instruction(simpletron *);
 void write_instruction(simpletron *);
 void load_instruction(simpletron *);
@@ -103,7 +105,7 @@ void branch_instruction(simpletron *);
 void branch_negative_instruction(simpletron *);
 void branch_zero_instruction(simpletron *);
 enum exit_val halt_instruction(simpletron *v1);
-//
+// funções que o simpletron faz quando lê um arquivo com instruções.
 bool read_instruction_from_file(simpletron *);
 void write_instruction_from_file(simpletron *);
 void load_instruction_from_file(simpletron *);
