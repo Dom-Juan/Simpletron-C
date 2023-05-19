@@ -72,6 +72,17 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
         e_val = execute_code(&v1, trace_status);
         print_warning(v1, e_val);
         if(dump_status) dump(v1);
+        if(save_program(&v1)) {
+            fprintf(stderr, "Programa salvo com sucesso!");
+        } else {
+            fprintf(stderr, "Erro ao salvar o programa");
+        }
+        if(load_program(&v1)) {
+            fprintf(stderr, "Programa carregado com sucesso!");
+        } else {
+            fprintf(stderr, "Erro ao carregar o programa");
+            return ERROR_INVALID;
+        }
         return e_val;
     } else {
         memory_init(&v1);
@@ -121,10 +132,19 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
                     v1.status = true;
                 }
                 if(option is 2) {   // Salvar o programa em um arquivo.
-
+                    if(save_program(&v1)) {
+                        fprintf(stderr, "Programa salvo com sucesso!");
+                    } else {
+                        fprintf(stderr, "Erro ao salvar o programa");
+                    }
                 }
                 if(option is 3) {   // Carregar o programa de um arquivo.
-
+                    if(load_program(&v1)) {
+                        fprintf(stderr, "Programa carregado com sucesso!");
+                    } else {
+                        fprintf(stderr, "Erro ao carregar o programa");
+                        return ERROR_INVALID;
+                    }
                 }
             }
         }
@@ -396,26 +416,21 @@ char *int_to_array(int number) {
 
 bool save_program(simpletron *v1) {
     FILE *out;
-    char *c;
-    char filename[50];
-    char full_file_path[100];
-    fprintf(stderr, "Digite o nome do arquivo: \n > ");
-    scanf_s("%s", filename);
-    strcpy_s(full_file_path, sizeof(filename), "./saved_files/");
-    strcpy_s(full_file_path, sizeof(filename), filename);
-    fopen_s(&out, full_file_path, "w+, ccs=UNICODE");
-    if(out == NULL) {
+    if(fopen_s(&out, "out.sml", "w+")) {
         return false;
     } else {
         size_t index = 0;
-        while(index < v1->mem_size) {
-            c = int_to_array(v1->memory[(int)index]);
-            fprintf(&out, "%s", c);
-            free(c);
+        while(index < v1->program_counter) {
+            if(((int)v1->memory[(int)index] > 99) && ((int)v1->memory[(int)index] < 9999)) {
+                fprintf(stderr, "[%d] %zu\n", (int)index, v1->memory[(int)index]);
+                fprintf(out, "%zu\n", v1->memory[(int)index]);
+            }
             index++;
         }
     }
+    fprintf(out, "%d\n", -9999);
     fclose(out);
+    free(out);
     return true;
 }
 
@@ -423,20 +438,20 @@ bool load_program(simpletron *v1) {
     FILE *in;
     int j = 0;
     char cursor;
+    /*
     char filename[50];
-    char full_file_path[100];
     fprintf(stderr, "Digite o nome do arquivo: \n > ");
-    scanf_s("%s", filename);
-    strcpy_s(full_file_path, sizeof(filename), "./saved_files/");
-    strcpy_s(full_file_path, sizeof(filename), filename);
-    fopen_s(&in, full_file_path, "w+, ccs=UNICODE");
-    if(in == NULL) {
+    fgets(filename, 50, stdin);
+    fflush(stdin);
+    fprintf(stderr, "PATH: %s\n", filename);
+     */
+    if(fopen_s(&in, "out.sml", "w+")) {
+        fclose(in);
         return false;
     } else {
         char ignore[1024];
         size_t index = 0;
-        int instruction_size = 0;
-        mem_type instruction[MEM_SIZE];
+        mem_type instruction[MEM_SIZE]; // Usar ou não ?
         char string_instruction[4];
         while((cursor = fgetc(in)) not_eq EOF) {
             if(cursor == '#') {
@@ -447,9 +462,9 @@ bool load_program(simpletron *v1) {
             } else if(cursor is '    ') {
                 continue;
             } else {
-                if(j < 4) {
+                if(j < 4) { // construir o número em string para ser convertido em instrução.
                     j = 0;
-                    instruction[(int)index] = (mem_type) atoi(string_instruction);
+                    v1->memory[(int)index] = (mem_type) atoi(string_instruction); // addiciona a instrução na memória.
                     index++;
                 } else {
                     strncat_s(string_instruction, sizeof(char), cursor, 1);
@@ -457,7 +472,8 @@ bool load_program(simpletron *v1) {
                 j++;
             }
         }
+        fclose(in);
+        free(in);
+        return true;
     }
-    fclose(in);
-    return true;
 }
