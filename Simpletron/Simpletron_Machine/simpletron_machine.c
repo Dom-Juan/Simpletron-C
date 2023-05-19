@@ -2,6 +2,7 @@
 // Created by Magoimortal_br on 11/03/2023.
 //
 #include <locale.h>
+#include <windows.h>
 #include "headers/simpletron_machine.h"
 
 #define is ==
@@ -11,6 +12,7 @@ void pause() {
     while (1) if (_kbhit()) break;
     fflush(stdin);
     fflush(stdout);
+    fprintf(stderr, "\n");
 }
 
 void print_intro() {
@@ -35,10 +37,10 @@ void print_menu(bool machine_status) {
         fprintf(stderr, ANSI_COLOR_RED "\n\t***                 * Simpletron com memória cheia *                ***\n"ANSI_COLOR_RESET);
     else 
         fprintf(stderr, ANSI_COLOR_GREEN "\n\t***                 * Simpletron com memória livre *                ***\n"ANSI_COLOR_RESET);
-    fprintf(stderr, ANSI_COLOR_CYAN "\n\t***                 Bem vindo ao Simpletron!                ***\n"ANSI_COLOR_RESET);
     fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "1" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Inserir outro programa\n" ANSI_COLOR_RESET);
     fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "2" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Salvar Arquivo\n" ANSI_COLOR_RESET);
     fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "3" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Carregar Arquivo\n" ANSI_COLOR_RESET);
+    fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_GREEN "4" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Limpar Memória Simpletron\n" ANSI_COLOR_RESET);
     fprintf(stderr,ANSI_COLOR_RESET " [" ANSI_COLOR_RED "0" ANSI_COLOR_RESET "] " ANSI_COLOR_RESET " - Sair do programa\n" ANSI_COLOR_RESET);
     fflush(stdin);
     fflush(stdout);
@@ -63,37 +65,32 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
     simpletron v1;
     v1.status = false;
     int option = -1;
+    print_intro();
+    memory_init(&v1);
     if (check_arguments(argc)) {
-        char file_name[20];
-        strcpy_s(file_name, sizeof(file_name), argv[1]);
-        memory_init(&v1);
-        print_intro();
-        load(&v1, file_name);
+        char filename[20];
+        strcpy_s(filename, sizeof(filename), argv[1]);
+        if(load_program(&v1, filename))
+            fprintf(stderr, "\nPrograma carregado com sucesso!\n");
+        else
+            exit(EXIT_FAILURE);
         e_val = execute_code(&v1, trace_status);
         print_warning(v1, e_val);
-        if(dump_status) dump(v1);
         if(save_program(&v1)) {
-            fprintf(stderr, "Programa salvo com sucesso!");
+            fprintf(stderr, "\nPrograma salvo com sucesso!\n");
         } else {
-            fprintf(stderr, "Erro ao salvar o programa");
-        }
-        if(load_program(&v1)) {
-            fprintf(stderr, "Programa carregado com sucesso!");
-        } else {
-            fprintf(stderr, "Erro ao carregar o programa");
+            fprintf(stderr, "\nErro ao salvar o programa\n");
             return ERROR_INVALID;
         }
+        if(dump_status) dump(v1);
         return e_val;
     } else {
-        memory_init(&v1);
-        print_intro();
         input(&v1);
         size_t i = 0;
         while(v1.memory[i] not_eq -9999 and v1.memory[i] not_eq 0) {
             fprintf(
                     stderr,
-                    ANSI_COLOR_CYAN "Memory" "[%zu]" ": " ANSI_COLOR_YELLOW "%hd\n" ANSI_COLOR_RESET,
-                    i, v1.memory[i]
+                    "Memoria[%zu]:" ANSI_COLOR_YELLOW "%hd\n" ANSI_COLOR_RESET, i, v1.memory[i]
                     );
             i++;
         }
@@ -101,28 +98,31 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
         print_warning(v1, e_val);
         if(dump_status) dump(v1);
         v1.status = true;
+        print_menu(v1.status);
         while(option not_eq 0) {    // se for 0, sai do loop e do programa, ultimo e_val é retornado por padrão.
             fflush(stdout);
             fflush(stdin);
-            if(v1.status is true) 
-                memory_reset(&v1);
-            else {
-                memory_init(&v1);
-                fprintf(stderr, "\n");
-                print_menu(v1.status);
-                fflush(stdin);
-                fflush(stdout);
-                scanf_s("%d", &option);
-                fflush(stdin);
-                fflush(stdout);
-                if(option is 1) {   // Carregar instruções de um programa e realizar operação.
+            fprintf(stderr, "\n>: ");
+            fflush(stdin);
+            fflush(stdout);
+            scanf_s("%d", &option);
+            fflush(stdin);
+            fflush(stdout);
+            if(option is 1) {   // Carregar instruções de um programa e realizar operação.
+                if(v1.status is true) {
+                    fprintf(stderr,
+                            ANSI_COLOR_YELLOW
+                            "\n[AVISO!]: Limpe a memória do simpletron antes de executar um programa.\n"
+                            ANSI_COLOR_RESET
+                            );
+                } else {
                     input(&v1);
                     i = 0;
                     while(v1.memory[i] not_eq -9999 and v1.memory[i] not_eq 0) {
                         fprintf(
                                 stderr,
-                                ANSI_COLOR_CYAN "Memory" "[%zu]" ": " ANSI_COLOR_YELLOW "%hd\n" ANSI_COLOR_RESET,
-                                i, v1.memory[i]
+                                ANSI_COLOR_CYAN
+                                "Memoria[%zu]:" ANSI_COLOR_YELLOW "%hd\n" ANSI_COLOR_RESET, i, v1.memory[i]
                                 );
                         i++;
                     }
@@ -131,22 +131,35 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
                     if(dump_status) dump(v1);
                     v1.status = true;
                 }
-                if(option is 2) {   // Salvar o programa em um arquivo.
-                    if(save_program(&v1)) {
-                        fprintf(stderr, "Programa salvo com sucesso!");
-                    } else {
-                        fprintf(stderr, "Erro ao salvar o programa");
-                    }
+            } else if(option is 2) {   // Salvar o programa em um arquivo.
+                if(save_program(&v1)) {
+                    fprintf(stderr, "Programa salvo com sucesso!");
+                } else {
+                    fprintf(stderr, "Erro ao salvar o programa");
+                    return ERROR_INVALID;
                 }
-                if(option is 3) {   // Carregar o programa de um arquivo.
-                    if(load_program(&v1)) {
-                        fprintf(stderr, "Programa carregado com sucesso!");
-                    } else {
-                        fprintf(stderr, "Erro ao carregar o programa");
-                        return ERROR_INVALID;
-                    }
+            } else if(option is 3) {   // Carregar o programa de um arquivo.
+                char filename[20];
+                fprintf(stderr, "* Digite o nome do arquivo (.txt ou .sml) *\n>: ");
+                scanf_s("%s", filename, sizeof(filename));
+                if(load_program(&v1, filename)) {
+                    fprintf(stderr, "Programa carregado com sucesso!");
+                    e_val = execute_code_input(&v1, trace_status);
+                    print_warning(v1, e_val);
+                    if(dump_status) dump(v1);
+                    v1.status = true;
+                } else {
+                    fprintf(stderr, "Erro ao carregar o programa");
+                    exit(EXIT_FAILURE);
                 }
+            } else if(option is 4) {
+                memory_reset(&v1);
+            } else if(option is 0){
+                return ERROR_NONE;
+            } else {
+                fprintf(stderr, ANSI_COLOR_YELLOW "\n[AVISO!]: Opção inválida.\n" ANSI_COLOR_RESET);
             }
+            print_menu(v1.status);
         }
         return e_val;
     }
@@ -158,7 +171,7 @@ static void memory_init(simpletron *v1) {
     v1->mem_size = MEM_SIZE;
     v1->memory = mem;
     v1->status = false;
-    fprintf(stderr, ANSI_COLOR_GREEN "[Memory allocated]" ANSI_COLOR_RESET "\n");
+    fprintf(stderr, ANSI_COLOR_GREEN "[Memória alocada]" ANSI_COLOR_RESET "\n");
     pause();
 }
 
@@ -172,15 +185,14 @@ static void memory_reset(simpletron *v1) {
     v1->instruction_register = 0;
     v1->accumulator = 0;
     v1->status = false;
-    fprintf(stderr, ANSI_COLOR_GREEN "[Memory re-allocated]" ANSI_COLOR_RESET "\n");
-    pause();
+    fprintf(stderr, ANSI_COLOR_GREEN "[Memória re-alocada]" ANSI_COLOR_RESET "\n");
 }
 
 static void input(simpletron *v1) {
     mem_type instruction = 0;
     size_t i = 0;
     fflush(stdin);
-    fprintf(stderr, "00 ?");
+    fprintf(stderr, "\n00 ?");
     scanf_s("%hd", &instruction);
     fflush(stdout);
     fseek(stdin, 0, SEEK_END);
@@ -189,7 +201,7 @@ static void input(simpletron *v1) {
         if (valid_input(instruction)) {
             v1->memory[i] = instruction;
         } else {
-            fprintf(stderr, ANSI_COLOR_RED "[ERROR] - INVALID WORD!!!\n" ANSI_COLOR_RESET);
+            fprintf(stderr, ANSI_COLOR_RED "[ERROR] - PALAVRA INVÁLIDA!!!\n" ANSI_COLOR_RESET);
             i--;
         }
         fprintf(stderr, "%4d ?", instruction);
@@ -199,6 +211,32 @@ static void input(simpletron *v1) {
     }
 }
 
+bool save_program(simpletron *v1) {
+    FILE *out;
+    if(fopen_s(&out, "out.sml", "w+")) {    // se ocorrer um erro, sair da função de save.
+        fclose(out);
+        return false;
+    } else {
+        size_t index = 0;
+        fprintf(stderr, ANSI_COLOR_YELLOW "\n           [SAVE]\n" ANSI_COLOR_RESET);
+        while(index < v1->program_counter) {    // Enquanto index for menor que o program counter.
+            // Salvar apenas instruções válidas e evitar salvar lixo da memória caso ocorra.
+            fprintf(stderr, "*");
+            Sleep(2);
+            if(((int)v1->memory[(int)index] > 999) && ((int)v1->memory[(int)index] < 9999)) {
+                fprintf(out, "%hd\n", v1->memory[(int)index]);
+            }
+            index++;
+        }
+        fprintf(stderr,"\n");
+    }
+    fprintf(out, "%d\n", -9999);
+    fclose(out);
+    fflush(out);
+    return true;
+}
+
+/* obsoleto e complexo.
 static void load(simpletron *v1, char file_name[]) {
     mem_type instruction = 0;
     FILE *file_point;
@@ -226,6 +264,70 @@ static void load(simpletron *v1, char file_name[]) {
             v1->memory[i] = instruction;
         }
         fclose(file_point);
+    }
+}
+ */
+
+bool load_program(simpletron *v1, char filename[]) {
+    FILE *in;
+    int errnum;
+    errno_t err;
+    if(filename is NULL) {
+        char buf[255];
+        strerror_s(buf, sizeof buf, err);
+        fprintf(stderr, "ERROR: %d Não foi possível abrir %s %s\n",
+                errnum, filename, buf);
+        pause();
+        return false;
+    }
+    if(fopen_s(&in, filename, "r")) { // deu ruim
+        fclose(in);     // fecha o arquivo.
+        return false;
+    } else {
+        char cursor;                    // "cursor" em char.
+        char ignore[1024];              // buffer de lixo/comentário, não é processado.
+        char buffer[1024];              // buffer de entrada do arquivo para o programa.
+        char string_instruction[4];     // instrução até 5 espaços: {+/- N N N N \0}
+
+        int j = 0,  k = 0, sign = 1;    // index controlador das instruções e gerações da string de instrução.
+        int instruction;                // usado para gerar a instrução do arquivo.
+        int index = 0;                  // index percorrer o buffer.
+        // Lendo instrução char por char.
+        fprintf(stderr, ANSI_COLOR_YELLOW "\n           [LOAD] - " ANSI_COLOR_GREEN "%s\n" ANSI_COLOR_RESET, filename);
+        while((cursor = fgetc(in)) not_eq EOF) {    // enquanto não chega no fim do arquivo, ler char a char.
+            fprintf(stderr, "*");
+            Sleep(2);
+            if(cursor == '#') {
+                fgets(ignore, sizeof(ignore), in);
+                continue;
+            } else if(cursor is ' ') {  // ignora espaço
+                continue;
+            } else {    // lendo char a char e armazenando no buffer.
+                buffer[index] = cursor;
+                index++;
+            }
+        }
+        fprintf(stderr,"\n");
+        // Convertendo para inteiro e armazenando o resultado.
+        for(int i = 0; i < index; i++) {
+            if(j == 4) {
+                j = 0;
+                sscanf(string_instruction, "%d", &instruction); // converte a string para inteiro.
+                v1->memory[k] = (mem_type) (instruction * sign);
+                fprintf(stderr, ANSI_COLOR_YELLOW "[Instrução]: %+05d\n" ANSI_COLOR_RESET, v1->memory[k]);
+                k++;                                    // incrementa o index da memória.
+            } else if(buffer[i] is '+') {
+                sign = 1;
+            } else if(buffer[i] is '-') {
+                sign = -1;
+            } else {    // constroi a string de instrução.
+                string_instruction[j] = buffer[i];
+                j++;
+            }
+        }
+        fclose(in);
+        fflush(in);
+        return true;
     }
 }
 
@@ -257,9 +359,9 @@ static void print_warning(simpletron v1, enum exit_val e_val) {
     if(e_val == ERROR_NONE)
         return;
     if(e_val == ERROR_INVALID)
-        sprintf(buffer, "WARNING:%+05d: %s\n", v1.instruction_register,warning[e_val]);
+        sprintf(buffer, "AVISO:%+05d: %s\n", v1.instruction_register,warning[e_val]);
     else
-        sprintf(buffer, "WARNING: %s\n", warning[e_val]);
+        sprintf(buffer, "AVISO: %s\n", warning[e_val]);
 }
 
 static enum exit_val execute_code(simpletron *v1, bool trace) {
@@ -402,78 +504,5 @@ static void dump(simpletron v1) {
                     (j is v1.mem_size / 10 - 1) ? "\n" : " " ANSI_COLOR_RESET
                     );
         }
-    }
-}
-
-char *int_to_array(int number) {
-    int n = log10(number) + 1;
-    char *result = calloc(n, sizeof(char));
-    for(int i = n - 1; i>= 0; --i, number /10) {
-        result[i] = (number % 10) + '0';
-    }
-    return result;
-}
-
-bool save_program(simpletron *v1) {
-    FILE *out;
-    if(fopen_s(&out, "out.sml", "w+")) {
-        return false;
-    } else {
-        size_t index = 0;
-        while(index < v1->program_counter) {
-            if(((int)v1->memory[(int)index] > 99) && ((int)v1->memory[(int)index] < 9999)) {
-                fprintf(stderr, "[%d] %zu\n", (int)index, v1->memory[(int)index]);
-                fprintf(out, "%zu\n", v1->memory[(int)index]);
-            }
-            index++;
-        }
-    }
-    fprintf(out, "%d\n", -9999);
-    fclose(out);
-    free(out);
-    return true;
-}
-
-bool load_program(simpletron *v1) {
-    FILE *in;
-    int j = 0;
-    char cursor;
-    /*
-    char filename[50];
-    fprintf(stderr, "Digite o nome do arquivo: \n > ");
-    fgets(filename, 50, stdin);
-    fflush(stdin);
-    fprintf(stderr, "PATH: %s\n", filename);
-     */
-    if(fopen_s(&in, "out.sml", "w+")) {
-        fclose(in);
-        return false;
-    } else {
-        char ignore[1024];
-        size_t index = 0;
-        mem_type instruction[MEM_SIZE]; // Usar ou não ?
-        char string_instruction[4];
-        while((cursor = fgetc(in)) not_eq EOF) {
-            if(cursor == '#') {
-                fgets(ignore, sizeof(ignore), in);
-                continue;
-            } else if(cursor is ' ') {
-                continue;
-            } else if(cursor is '    ') {
-                continue;
-            } else {
-                if(j < 4) { // construir o número em string para ser convertido em instrução.
-                    j = 0;
-                    v1->memory[(int)index] = (mem_type) atoi(string_instruction); // addiciona a instrução na memória.
-                    index++;
-                } else {
-                    strncat_s(string_instruction, sizeof(char), cursor, 1);
-                }
-                j++;
-            }
-        }
-        fclose(in);
-        free(in);
-        return true;
     }
 }

@@ -50,3 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Custom ignores
+.idea
+.vscode
+cmake-build-debug
+cmake-build-release
+build

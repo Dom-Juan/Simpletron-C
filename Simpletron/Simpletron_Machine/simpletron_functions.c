@@ -4,7 +4,9 @@
 
 #include "headers\simpletron_machine.h"
 
-/* Execução de input */
+/************************************************/
+/*** Execução do programa interativa por CLI  ***/
+/************************************************/
 void read_instruction(simpletron *v1) {
     mem_type temp;
     fprintf(stderr, "Digite a entrada [-9999 - 9999]\n>: ");
@@ -74,9 +76,11 @@ enum exit_val halt_instruction(simpletron *v1) {
     v1->program_counter = 100;
     return ERROR_NONE;
 }
-/**********************************************/
-/** Execução do programa por arquigo arquivo **/
-/**********************************************/
+/****** FIM EXECUÇÃO INTERATIVA ******/
+
+/*************************************************/
+/** Execução do programa por CMD usando arquivo **/
+/*************************************************/
 bool read_instruction_from_file(simpletron *v1) {
     fprintf(stderr, "Digite a entrada [-9999 - 9999]\n>: ");
     /*
@@ -167,25 +171,4 @@ enum exit_val halt_instruction_from_file(simpletron *v1) {
     v1->program_counter = 100;
     return ERROR_NONE;
 }
-
-bool list_dir_contents(const char *string_dir) {
-    WIN32_FIND_DATA find_file;
-    HANDLE handle_file = NULL;
-    char string_path[2048];
-
-    // Especificando o tipo de arquivo a ser utilizado.
-    sprintf(string_path, "%s\\*.*", string_dir);
-    if((handle_file = FindFirstFile(string_path, &find_file)) == INVALID_HANDLE_VALUE) {
-        fprintf(
-                stderr,
-                ANSI_COLOR_RED "Path not found: " ANSI_COLOR_YELLOW  "[%s]\n" ANSI_COLOR_RESET,
-                string_dir
-                );
-        return false;
-    }
-    do {
-
-    } while(FindNextFile(handle_file, &find_file));
-    FindClose(handle_file);
-    return true;
-}
+/****** FIM EXECUÇÃO DIRETA DO CMD POR ARQUIVO. ******/
