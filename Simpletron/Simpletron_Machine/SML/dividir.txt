@@ -1,0 +1,7 @@
++1010 # A
++1011 # B
++2010 # Carregar A
++3211 # Dividir B
++2110 # Armazenar A
++1110 # Print A
++5300 # Fim
