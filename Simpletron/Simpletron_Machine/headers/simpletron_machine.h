@@ -15,11 +15,11 @@
 #include <ctype.h>
 #include <string.h>
 #include <limits.h>
-#include <iso646.h>
+#include <iso646.h>   // Adiciona operandos equivalentes aos de python para C.
 #include <conio.h>
 //#include <dirent.h> // Apenas POSIX, MSVC não possuir essa lib
 //#include <unistd.h> // Apenas POSIX, MSVC não possuir essa lib
-#include "unistd.h"
+#include "unistd.h"   // Tive que incluir uma implementação open source na mão dessa lib, só tristeza.
 // Includes de headers do programa.
 #include "simpletron_memory.h"
 
@@ -33,14 +33,14 @@
 
 // Struct do Simpletron
 typedef struct Simpletron {
-    mem_type *memory;           // array unidimensional simulando a memória "RAM".
-    size_t mem_size;            // tamanho da memória.
-    size_t program_counter;     // contador de programa.
+    mem_type *memory;           // Array unidimensional simulando a memória "RAM".
+    size_t mem_size;            // Tamanho da memória.
+    size_t program_counter;     // Contador de programa.
     int accumulator;            // valor sendo processado.
-    int instruction_register;   // instrução atual.
-    int op_code;                // operaçãoo atual a ser feita
-    int operand;                // operador ou local da memória da instrução do operando.
-    bool status;                // status para determinar se a struct possui valores.
+    int instruction_register;   // Instrução atual.
+    int op_code;                // Operaçãoo atual a ser feita.
+    int operand;                // Operador ou local da memória da instrução do operando.
+    bool status;                // Status para determinar se a struct possui valores.
 } simpletron;
 
 // Enum para os valores de saida.
@@ -77,7 +77,7 @@ static const char *end_execution[] = {
 };
 
 // Declarações de funções do código.
-static enum exit_val execute_code(simpletron *, bool trace);
+static enum exit_val execute_code(simpletron *);
 static enum exit_val execute_code_input(simpletron *v1, bool trace);
 static void memory_init(simpletron *);
 static void memory_reset(simpletron *);

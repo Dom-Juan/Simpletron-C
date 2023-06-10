@@ -5,8 +5,12 @@
 #include <windows.h>
 #include "headers/simpletron_machine.h"
 
+// Arquivo com o loop principal do Simpletron.
+
+// Estou usando uma ISO do C que permite operandos como em python pq acho legal.
 #define is ==
 
+// Pause feito na mão pq o do windows estava uma merda...
 void pause() {
     fprintf(stderr,"Press any key to continue . . .");
     while (1) if (_kbhit()) break;
@@ -15,6 +19,7 @@ void pause() {
     fprintf(stderr, "\n");
 }
 
+// Introdução do simpletron.
 void print_intro() {
     if(setlocale(LC_ALL, "") == NULL) {
         fprintf(stderr, "error while setlocale()\n");
@@ -29,6 +34,7 @@ void print_intro() {
     fflush(stdout);
 }
 
+// Menu de interação do simpletron.
 void print_menu(bool machine_status) {
     if(setlocale(LC_ALL, "") == NULL) {
         fprintf(stderr, "error while setlocale()\n");
@@ -46,15 +52,18 @@ void print_menu(bool machine_status) {
     fflush(stdout);
 }
 
+// Verificar os argumentos caso iniciado direito pelo CMD passando uma arquivo.
 bool check_arguments(const int num_arguments) {
     return num_arguments < 2 ? false : true;
 }
 
+// Verifica se o input é válido.
 bool valid_input(int word) {
     if(word <= 9999 && word >= -9999) return true;
     else return false;
 }
 
+// Função principal responsável por executar a lógica do simpletron.
 int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
     fprintf(stderr, "\n             [start_machine]\n");
     fflush(stdin);
@@ -74,7 +83,7 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
             fprintf(stderr, "\nPrograma carregado com sucesso!\n");
         else
             exit(EXIT_FAILURE);
-        e_val = execute_code(&v1, trace_status);
+        e_val = execute_code(&v1);
         print_warning(v1, e_val);
         if(save_program(&v1)) {
             fprintf(stderr, "\nPrograma salvo com sucesso!\n");
@@ -140,16 +149,16 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
                 }
             } else if(option is 3) {   // Carregar o programa de um arquivo.
                 char filename[20];
-                fprintf(stderr, "* Digite o nome do arquivo (.txt ou .sml) *\n>: ");
+                fprintf(stderr, ANSI_COLOR_BLUE "* Digite o nome do arquivo (.txt ou .sml) *\n" ANSI_COLOR_RESET "\n>: ");
                 scanf_s("%s", filename, sizeof(filename));
                 if(load_program(&v1, filename)) {
-                    fprintf(stderr, "Programa carregado com sucesso!");
+                    fprintf(stderr, ANSI_COLOR_GREEN "\nPrograma carregado com sucesso!\n" ANSI_COLOR_RESET);
                     e_val = execute_code_input(&v1, trace_status);
                     print_warning(v1, e_val);
                     if(dump_status) dump(v1);
                     v1.status = true;
                 } else {
-                    fprintf(stderr, "Erro ao carregar o programa");
+                    fprintf(stderr, ANSI_COLOR_RED "\n[Erro ao carregar o programa]\n" ANSI_COLOR_RESET);
                     exit(EXIT_FAILURE);
                 }
             } else if(option is 4) {
@@ -165,6 +174,7 @@ int start_machine(int argc, char *argv[], bool dump_status, bool trace_status) {
     }
 }
 
+// Inicia a memória do simpletron.
 static void memory_init(simpletron *v1) {
     fflush(stdin);
     static mem_type mem[MEM_SIZE];
@@ -175,6 +185,7 @@ static void memory_init(simpletron *v1) {
     pause();
 }
 
+// Limpa a memória do simpletron.
 static void memory_reset(simpletron *v1) {
     fflush(stdin);
     static mem_type mem[MEM_SIZE];
@@ -188,6 +199,7 @@ static void memory_reset(simpletron *v1) {
     fprintf(stderr, ANSI_COLOR_GREEN "[Memória re-alocada]" ANSI_COLOR_RESET "\n");
 }
 
+// Leitura de input pelo usuário
 static void input(simpletron *v1) {
     mem_type instruction = 0;
     size_t i = 0;
@@ -211,6 +223,8 @@ static void input(simpletron *v1) {
     }
 }
 
+// Salva o programa na memória para um arquivo saída
+// TODO: por alguma desgraça infernal o fopen_s se recusa a ler uma string para salvar o arquivo, então deixei uma constante.
 bool save_program(simpletron *v1) {
     FILE *out;
     if(fopen_s(&out, "out.sml", "w+")) {    // se ocorrer um erro, sair da função de save.
@@ -236,38 +250,7 @@ bool save_program(simpletron *v1) {
     return true;
 }
 
-/* obsoleto e complexo.
-static void load(simpletron *v1, char file_name[]) {
-    mem_type instruction = 0;
-    FILE *file_point;
-    size_t i;
-    int errnum;
-    errno_t err;
-    fprintf(stderr, ANSI_COLOR_GREEN "[file name]: %s\n" ANSI_COLOR_RESET, file_name);
-    if((err = fopen_s(&file_point, file_name, "r")) not_eq 0) {
-        errnum = errno;
-        char buf[255];
-        strerror_s(buf, sizeof buf, err);
-        fprintf(stderr, "ERROR: %d Cannot open file %s %s\n",
-                errnum, file_name, buf);
-        pause();
-        exit(EXIT_FAILURE);
-    } else {
-        for(i = 0; !feof(file_point) and i < v1->mem_size; i++) {
-            if(instruction is -9999) break;
-            if(get_instruction_from_file(file_point, &instruction) == 0) {
-                fprintf(stderr, "ERROR: Improper program\n");
-                pause();
-                exit(ERROR_INPUT);
-            }
-            fprintf(stderr, ANSI_COLOR_YELLOW "Instruction: %+05d\n" ANSI_COLOR_RESET, instruction);
-            v1->memory[i] = instruction;
-        }
-        fclose(file_point);
-    }
-}
- */
-
+// Carrega o programa para o simpletron de um arquivo.
 bool load_program(simpletron *v1, char filename[]) {
     FILE *in;
     int errnum;
@@ -312,7 +295,7 @@ bool load_program(simpletron *v1, char filename[]) {
         for(int i = 0; i < index; i++) {
             if(j == 4) {
                 j = 0;
-                sscanf(string_instruction, "%d", &instruction); // converte a string para inteiro.
+                sscanf_s(string_instruction, "%d", &instruction); // converte a string para inteiro.
                 v1->memory[k] = (mem_type) (instruction * sign);
                 fprintf(stderr, ANSI_COLOR_YELLOW "[Instrução]: %+05d\n" ANSI_COLOR_RESET, v1->memory[k]);
                 k++;                                    // incrementa o index da memória.
@@ -331,29 +314,7 @@ bool load_program(simpletron *v1, char filename[]) {
     }
 }
 
-int get_instruction_from_file(FILE *file_path, mem_type *instruction) {
-    size_t i;
-    int c, num = 0, sign;
-    fflush(stdin);
-    while(isspace(c = getc(file_path)));
-    fflush(stdout);
-    if(c is EOF) return 1;
-    sign = (c is '-' ? -1 : 1);
-    if(c not_eq '+' and c not_eq '-') return 0;
-    else c = getc(file_path);
-    for(i = 0; i < INSTRUCTION_SIZE; i++) {
-        if(not isdigit(c))
-            return 0;
-        num = num * 10 + c - '0';
-        c = getc(file_path);
-    }
-    while(c not_eq '\n' and c not_eq EOF) {
-        c = getc(file_path);
-    }
-    *instruction = sign * num;
-    return 1;
-}
-
+// Mostra uma mensagem de aviso caso necessário.
 static void print_warning(simpletron v1, enum exit_val e_val) {
     char buffer[120];
     if(e_val == ERROR_NONE)
@@ -364,7 +325,8 @@ static void print_warning(simpletron v1, enum exit_val e_val) {
         sprintf(buffer, "AVISO: %s\n", warning[e_val]);
 }
 
-static enum exit_val execute_code(simpletron *v1, bool trace) {
+// Função onde as instruções são lidas, carregadas e executadas.
+static enum exit_val execute_code(simpletron *v1) {
     v1->program_counter = 0;
     v1->accumulator = 0;
 

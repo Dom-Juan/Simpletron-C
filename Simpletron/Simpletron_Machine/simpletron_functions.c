@@ -2,7 +2,10 @@
 // Created by Magoimortal_br on 12/03/2023.
 //
 
+// Include das funções.
 #include "headers\simpletron_machine.h"
+
+// Arquivo de lógica do simpletron, aqui a magia acontece.
 
 /************************************************/
 /*** Execução do programa interativa por CLI  ***/
@@ -83,12 +86,6 @@ enum exit_val halt_instruction(simpletron *v1) {
 /*************************************************/
 bool read_instruction_from_file(simpletron *v1) {
     fprintf(stderr, "Digite a entrada [-9999 - 9999]\n>: ");
-    /*
-    if(get_instruction_from_file(stdin, &(v1->memory[v1->operand])) == 0)
-        return false;
-    v1->program_counter++;
-    return true;
-    */
     mem_type temp;
     scanf_s("%hd", &temp);
     fseek(stdin, 0, SEEK_END);

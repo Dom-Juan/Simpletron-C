@@ -1,6 +1,7 @@
 #include "Simpletron_Machine/headers/simpletron_machine.h"
 #include <locale.h>
 
+// Coloração no print para deixa o terminal mais vívido.
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"

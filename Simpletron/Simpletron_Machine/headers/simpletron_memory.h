@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
-#define MEM_SIZE 100
-#define MEM_MAX 9999
-#define MEM_MIN -9999
-#define INSTRUCTION_SIZE 4
-#define OP_SIZE 2
+#define MEM_SIZE 100        // Total de instruções que cabem na palavra.
+#define MEM_MAX 9999        // Máximo na memória.
+#define MEM_MIN -9999       // Mínimo na memória.
+#define INSTRUCTION_SIZE 4  // Tamanho da palavra/instrição.
+// #define OP_SIZE 2        Não sei pq fiz isso.
 
 typedef int16_t mem_type;
 
